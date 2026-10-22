@@ -1,4 +1,4 @@
--- Currency-neutral SQL; values stay in the dataset's source currency.
+-- Currency-neutral SQL: values stay in the dataset's source currency.
 -- Only positive, non-cancelled rows count as sales. Signed values retain negative rows once.
 SELECT
   SUM(CASE WHEN quantity > 0 AND unit_price > 0 AND UPPER(TRIM(COALESCE(invoice_id,''))) NOT LIKE 'C%' THEN quantity * unit_price ELSE 0 END) AS gross_sales,
