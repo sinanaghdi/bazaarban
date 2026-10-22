@@ -10,9 +10,11 @@
     const d = new Date(s + 'T12:00:00Z');
     return Number.isNaN(d.getTime()) || d.toISOString().slice(0,10) !== s ? null : d;
   };
+  const isNumeric = v => v !== null && v !== undefined && String(v).trim() !== '' && Number.isFinite(Number(v));
+  const isFinanciallyComputable = r => Boolean(fromIso(String(r.sale_date || '')) && isNumeric(r.quantity) && isNumeric(r.unit_price_irr) && isNumeric(r.discount_irr));
   const isValid = r => {
-    const d = fromIso(String(r.sale_date || '')), q = Number(r.quantity), p = Number(r.unit_price_irr), disc = Number(r.discount_irr);
-    return Boolean(d && String(r.invoice_id || '').trim() && String(r.store_id || '').trim() && String(r.store_name || '').trim() && String(r.product_code || '').trim() && String(r.product_name || '').trim() && Number.isFinite(q) && Number.isFinite(p) && Number.isFinite(disc) && p >= 0 && disc >= 0 && (q >= 0 || disc === 0));
+    const q = Number(r.quantity), p = Number(r.unit_price_irr), disc = Number(r.discount_irr);
+    return Boolean(isFinanciallyComputable(r) && String(r.invoice_id || '').trim() && String(r.store_id || '').trim() && String(r.store_name || '').trim() && String(r.product_code || '').trim() && String(r.product_name || '').trim() && p >= 0 && disc >= 0 && (q >= 0 || disc === 0));
   };
   const lineNet = r => Number(r.quantity) * Number(r.unit_price_irr) - Number(r.discount_irr);
   const setText = (id, value) => { $(id).textContent = value; };
@@ -25,19 +27,21 @@
     const seen = new Set(); let dups = 0;
     rows.forEach(r => { const key = JSON.stringify(fields.map(k => r[k] == null ? '' : r[k])); if (seen.has(key)) dups++; else seen.add(key); });
     const missingCustomer = rows.filter(r => !String(r.customer_id == null ? '' : r.customer_id).trim()).length;
+    const missingProductName = rows.filter(r => !String(r.product_name == null ? '' : r.product_name).trim()).length;
     const pct = rows.length ? validCount / rows.length * 100 : 0;
     setText('allRows', fmt.format(rows.length)); setText('invalidRows', fmt.format(rows.length-validCount));
     setText('duplicateRows', fmt.format(dups)); setText('missingCustomers', fmt.format(missingCustomer));
+    setText('missingProductNames', fmt.format(missingProductName));
     setText('validPercent', fmtDecimal.format(pct) + '٪'); $('validProgress').style.width = pct + '%';
   }
 
   function calculate() {
     const start = $('startDate').value, end = $('endDate').value, store = $('storeFilter').value;
-    let rows = rawRows.filter(isValid);
+    let rows = rawRows.filter(isFinanciallyComputable);
     if (start) rows = rows.filter(r => r.sale_date >= start);
     if (end) rows = rows.filter(r => r.sale_date <= end);
     if (store) rows = rows.filter(r => r.store_id === store);
-    const positive = rows.filter(r => Number(r.quantity) > 0 && Number(r.unit_price_irr) > 0);
+    const positive = rows.filter(r => Number(r.quantity) > 0 && Number(r.unit_price_irr) > 0 && !String(r.invoice_id || '').trim().toUpperCase().startsWith('C'));
     const returns = rows.filter(r => Number(r.quantity) < 0);
     const invoices = new Set(positive.map(r => r.invoice_id));
     const gross = positive.reduce((s,r) => s + Number(r.quantity)*Number(r.unit_price_irr),0);
@@ -83,7 +87,7 @@
 
   function drawProducts(rows) {
     const agg = new Map();
-    rows.forEach(r => { const key=String(r.product_code||'')+'|'+String(r.product_name||''); const old=agg.get(key)||{name:r.product_name,net:0}; old.net+=lineNet(r); agg.set(key,old); });
+    rows.forEach(r => { const name=String(r.product_name || '').trim() || 'بدون توضیح در منبع'; const key=String(r.product_code||'')+'|'+name; const old=agg.get(key)||{name,net:0}; old.net+=lineNet(r); agg.set(key,old); });
     const top=Array.from(agg.values()).sort((a,b)=>b.net-a.net).slice(0,8), max=Math.max(1,...top.map(p=>p.net));
     $('productBars').innerHTML=top.length ? top.map(p=>'<div class="product-row"><span class="product-name" title="'+escapeText(p.name)+'">'+escapeText(p.name)+'</span><span class="bar-track"><i class="bar-fill" style="width:'+Math.max(0,p.net)/max*100+'%"></i></span><span class="bar-value">'+money(p.net)+'</span></div>').join('') : '<div class="empty">داده‌ای برای رتبه‌بندی وجود ندارد.</div>';
   }
