@@ -1,8 +1,10 @@
 """Download, run, reconcile and report the official UCI Online Retail dataset."""
 from __future__ import annotations
-import argparse, hashlib, json, os, shutil, sqlite3, tempfile, time, urllib.request, zipfile
+import argparse, hashlib, json, os, shutil, sqlite3, sys, tempfile, time, urllib.request, zipfile
 from pathlib import Path
 import pandas as pd
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
 from bazaarban.analytics import load_sales, analyze_sales
 from bazaarban.uci_benchmark import adapt_uci_online_retail
 
@@ -91,7 +93,7 @@ def sql_reconciliation(project_root: Path, adapted: pd.DataFrame, expected: dict
         db.close()
 
 def run(output: Path) -> dict:
-    project_root = Path(__file__).resolve().parents[1]
+    project_root = PROJECT_ROOT
     with tempfile.TemporaryDirectory(prefix="bazaarban_uci_") as temp:
         folder = Path(temp)
         workbook, digest = fetch_workbook(folder)
