@@ -154,10 +154,15 @@ def run(output: Path) -> dict:
                 "python_direct_gross_sales_reconciles": abs(direct_gross - kpi["gross_sales_gbp"]) <= max(0.02,abs(direct_gross)*1e-9),
                 "monthly_signed_value_reconciles": abs(monthly_signed - kpi["signed_recorded_value_gbp"]) <= max(0.02,abs(kpi["signed_recorded_value_gbp"])*1e-9),
                 "sqlite_and_pandas_reconcile": sqlite_result["status"] == "passed",
-                "all_product_groups_reported_for_rankings": len(report["top_products"]) <= 10,
+                "top_product_ranking_is_capped_at_ten": len(report["top_products"]) <= 10,
                 "source_rows_preserved_by_adapter": len(adapted) == len(source),
             },
             "sqlite_reconciliation": sqlite_result,
+            "product_coverage": {
+                "distinct_nonmissing_product_codes_in_source": int(adapted["product_code"].nunique(dropna=True)),
+                "ranked_products_returned": int(len(report["top_products"])),
+                "ranking_scope": "top 10 only; not every product code",
+            },
             "top_10_products_by_positive_sales": report["top_products"],
             "monthly_trend_first_last": [report["monthly_trend"][0], report["monthly_trend"][-1]] if report["monthly_trend"] else [],
         }
