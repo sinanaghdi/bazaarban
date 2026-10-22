@@ -1,7 +1,7 @@
 # گزارش اعتبارسنجی دیتاست واقعی — بازاربان
 
 **وضعیت:** اجرای واقعی موفق؛ منبع عمومی UCI Online Retail  
-**اجرای تأییدشده:** [GitHub Actions run 39745670035](https://github.com/sinanaghdi/bazaarban/actions/runs/39745670035)  
+**اجرای تأییدشده:** [GitHub Actions run 39745670035](https://github.com/sinanaghdi/bazaarban/actions/runs/39745978096)  
 **Commit کد benchmark:** \`82abeda3f9beac39a0fd8bfba524499325658b0e\`  
 **گزارش اجرای خودکار:** فایل \`bazaarban-uci-online-retail-validation\` در بخش Artifacts همان اجرا نگهداری می‌شود.
 
