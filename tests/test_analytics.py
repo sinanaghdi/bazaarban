@@ -78,12 +78,12 @@ def test_sql_and_pandas_reconcile_on_same_fixture():
     conn = sqlite3.connect(":memory:")
     conn.executescript((root / "sql/schema.sql").read_text(encoding="utf-8"))
     conn.executemany(
-        "INSERT INTO sales_lines (sale_date,invoice_id,store_id,store_name,product_code,product_name,category,customer_id,quantity,unit_price_irr,discount_irr) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
-        [tuple(row.get(c) for c in ["sale_date","invoice_id","store_id","store_name","product_code","product_name","category","customer_id","quantity","unit_price_irr","discount_irr"]) for row in source.to_dict(orient="records")]
+        "INSERT INTO sales_lines (sale_date,invoice_id,store_id,store_name,product_code,product_name,category,customer_id,quantity,unit_price,discount) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        [tuple(row.get(src) for src in ["sale_date","invoice_id","store_id","store_name","product_code","product_name","category","customer_id","quantity","unit_price_irr","discount_irr"]) for row in source.to_dict(orient="records")]
     )
     sql = (root / "sql/analytics.sql").read_text(encoding="utf-8")
-    first_query = sql.split("-- Repeat identified customers divided")[0]
-    output = conn.execute(first_query).fetchone()
+    statements = [s.strip() for s in sql.split(";") if "SELECT" in s.upper()]
+    output = conn.execute(statements[0]).fetchone()
     kpi = report["kpis"]
     assert output[0] == kpi["gross_sales_irr"]
     assert output[1] == kpi["discount_total_irr"]
@@ -91,3 +91,38 @@ def test_sql_and_pandas_reconcile_on_same_fixture():
     assert output[3] == kpi["signed_recorded_value_irr"]
     assert output[4] == kpi["distinct_positive_invoices"]
     conn.close()
+
+def test_missing_product_name_remains_visible_but_does_not_drop_computable_sales():
+    source = tiny_frame()
+    source.loc[0,"product_name"] = ""
+    prepared = load_in_memory(source)
+    report = analyze_sales(prepared)
+    assert report["quality"]["missing_product_name_rows"] == 1
+    assert report["quality"]["invalid_rows"] == 1
+    # First line still contributes 2 * 100 - 10 = 190 to financial metrics.
+    assert report["kpis"]["positive_net_sales_irr"] == 340.0
+    assert report["kpis"]["financially_computable_line_count"] == 4
+    assert any(p["product_name"] == "بدون توضیح در منبع" for p in report["top_products"])
+
+def test_cancelled_invoice_with_positive_quantity_is_not_positive_sales():
+    source = pd.DataFrame([{
+        "sale_date":"2026-01-02","invoice_id":"c123","store_id":"S-1","store_name":"فروشگاه یک",
+        "product_code":"P-1","product_name":"کالا","category":"خوراکی","customer_id":"C-1",
+        "quantity":2,"unit_price_irr":100,"discount_irr":0
+    }])
+    report = analyze_sales(load_in_memory(source))
+    assert report["kpis"]["gross_sales_irr"] == 0.0
+    assert report["kpis"]["distinct_positive_invoices"] == 0
+    assert report["kpis"]["cancellation_positive_rows_excluded"] == 1
+
+def test_generic_currency_schema_reports_the_source_currency_not_irr(tmp_path):
+    frame = pd.DataFrame([{
+        "sale_date":"2026-01-02","invoice_id":"100","store_id":"UCI","store_name":"One online retailer",
+        "product_code":"A","product_name":"Item","category":"Unknown","customer_id":"1",
+        "quantity":2,"unit_price":1.25,"discount":0.0
+    }])
+    path=tmp_path/"gbp.csv"; frame.to_csv(path,index=False)
+    report=analyze_sales(load_sales(path),currency_code="GBP",dataset_classification="REAL PUBLIC SOURCE DATA")
+    assert report["currency_code"] == "GBP"
+    assert report["kpis"]["gross_sales_gbp"] == 2.5
+    assert "gross_sales_irr" not in report["kpis"]

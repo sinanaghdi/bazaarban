@@ -1,0 +1,40 @@
+name: Bazaarban real dataset benchmark
+on:
+  push:
+    paths:
+      - "src/bazaarban/**"
+      - "scripts/benchmark_uci_online_retail.py"
+      - "tests/**"
+      - "sql/**"
+      - ".github/workflows/benchmark-real-data.yml"
+      - "requirements.txt"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  uci-online-retail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run unit and regression tests
+        run: |
+          python scripts/generate_demo_data.py
+          python -m pytest -q
+      - name: Download official UCI Online Retail and validate end-to-end
+        run: python scripts/benchmark_uci_online_retail.py --output reports/uci_online_retail_benchmark.json
+      - name: Upload real-dataset validation report (no raw customer data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bazaarban-uci-online-retail-validation
+          path: reports/uci_online_retail_benchmark.json
+          if-no-files-found: warn
+          retention-days: 14

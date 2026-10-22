@@ -1,4 +1,6 @@
--- SQLite-compatible teaching schema. Dates are stored as ISO Gregorian YYYY-MM-DD.
+-- SQLite-compatible analytical schema.
+-- Monetary columns are currency-neutral and preserve the source unit (for example GBP or IRR).
+-- Ingestion should retain source anomalies; validation rules flag them rather than rejecting rows.
 CREATE TABLE IF NOT EXISTS sales_lines (
   source_row_id INTEGER PRIMARY KEY,
   sale_date TEXT,
@@ -9,11 +11,9 @@ CREATE TABLE IF NOT EXISTS sales_lines (
   product_name TEXT,
   category TEXT,
   customer_id TEXT,
-  quantity INTEGER,
-  unit_price_irr INTEGER,
-  discount_irr INTEGER,
-  CHECK (unit_price_irr IS NULL OR unit_price_irr >= 0),
-  CHECK (discount_irr IS NULL OR discount_irr >= 0)
+  quantity REAL,
+  unit_price REAL,
+  discount REAL
 );
 CREATE INDEX IF NOT EXISTS ix_sales_lines_date ON sales_lines(sale_date);
 CREATE INDEX IF NOT EXISTS ix_sales_lines_invoice ON sales_lines(invoice_id);
