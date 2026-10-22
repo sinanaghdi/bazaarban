@@ -24,7 +24,7 @@ def generate_sales(seed: int = 20261021, invoices: int = 520) -> pd.DataFrame:
     days_span = 385
     for i in range(invoices):
         store_id, store_name = rng.choice(STORES)
-        day = start + pd.Timedelta(days=rng.randrange(days_span))
+        day = start + pd.Timedelta(rng.randrange(days_span), unit="D")
         invoice_id = f"F-{100000+i}"
         customer = "" if rng.random() < 0.055 else rng.choice(customers)
         line_n = rng.choices([1,2,3,4], weights=[18,42,30,10])[0]
