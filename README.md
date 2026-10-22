@@ -39,5 +39,8 @@
 - docs/: فرهنگ داده، تعریف شاخص‌ها و روش‌شناسی؛
 - reports/management_report_fa.md: قالب گزارش مدیریتی فارسی.
 
-## اعتبارسنجی
-گزارش پیاده‌سازی در implementation_report.md نتایج محلی را ثبت می‌کند. وضعیت اجرای CI پس از انتشار در زبانهٔ Actions همین مخزن قابل بررسی است. نسخهٔ فعلی backend، احراز هویت، اتصال به دادهٔ مشتری واقعی، PostgreSQL یا فایل Power BI ندارد. برای هر استفادهٔ تجاری از دادهٔ واقعی باید مجوز و تعریف مالی فروشگاه مشخص شود.
+## اعتبارسنجی با دیتاست عمومی واقعی
+
+موتور تحلیل و قراردادهای KPI روی [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail) با **541,909 ردیف** در [GitHub Actions](https://github.com/sinanaghdi/bazaarban/actions/runs/39745670035) اجرا شده‌اند؛ کنترل تعداد ردیف، حفظ ردیف‌ها، تطبیق Python با محاسبات مستقل و آشتی SQL/SQLite با Pandas موفق بوده است. گزارش عددها، QA، تعاریف و محدودیت‌های adapter در [docs/uci_online_retail_benchmark.md](docs/uci_online_retail_benchmark.md) است. ۱۳ تست Python نیز در [اجرای CI](https://github.com/sinanaghdi/bazaarban/actions/runs/39745670158) موفق شده‌اند.
+
+این benchmark از adapter جداگانه استفاده می‌کند؛ **داشبورد دمو همچنان از دیتاست مصنوعی استفاده می‌کند**. UCI Online Retail فقط یک کسب‌وکار آنلاین را توصیف می‌کند، ستون شعبه، تخفیف و دسته‌بندی ندارد و مبلغ‌ها به GBP هستند. صفر گذاشتن تخفیف برای تطبیق schema فقط فرض adapter است، نه دادهٔ واقعی منبع. این نسخه backend، احراز هویت، PostgreSQL یا فایل Power BI ندارد. برای استفادهٔ تجاری به داده و مجوز و تعریف مالی تأییدشده نیاز است.
