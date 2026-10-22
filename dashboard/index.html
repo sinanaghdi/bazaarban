@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="داشبورد نمونهٔ تحلیل فروش و کیفیت داده">
+<title>بازاربان | داشبورد تحلیل فروش</title>
+<link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+<a class="brand" href="#top"><span class="brand-icon">ب</span><span><strong>بازاربان</strong><small>هوشمندی فروش</small></span></a>
+<div class="side-label">محیط تحلیل</div>
+<a class="nav active" href="#overview">◫ نمای کلی</a><a class="nav" href="#trends">⌁ روند فروش</a><a class="nav" href="#products">▦ کالاها و فروشگاه‌ها</a><a class="nav" href="#quality">✓ کیفیت داده</a>
+<div class="sidebar-bottom"><span class="status-dot"></span><div><b>نسخهٔ نمایشی</b><small>تمام رکوردها مصنوعی‌اند</small></div></div>
+</aside>
+<main id="top" class="main">
+<header class="topbar"><div class="breadcrumb">بازاربان <span>/</span> <b>مرکز تصمیم‌گیری</b></div><div class="top-meta"><span class="demo-badge"><i></i> دادهٔ آزمایشی</span><button id="reset" class="ghost-button" type="button">بازنشانی</button></div></header>
+<div class="content">
+<section id="overview" class="page-heading"><div><span class="eyebrow">SMALL BUSINESS INTELLIGENCE</span><h1>تصویر روشن‌تری از فروش کسب‌وکار</h1><p>فروش، رفتار مشتری و کیفیت داده را در یک نمای قابل بررسی کنار هم ببینید.</p></div><div class="as-of">تاریخ‌های ذخیره‌شده: میلادی<br><b id="activeRange">در حال بارگذاری…</b></div></section>
+<div class="notice"><span>ⓘ</span><div><strong>نمونه‌کار با دادهٔ مصنوعی</strong><p>اعداد این داشبورد واقعی نیستند و برای نتیجه‌گیری دربارهٔ بازار ایران یا عملکرد کسب‌وکار واقعی استفاده نمی‌شوند.</p></div></div>
+<section class="filters" aria-label="فیلتر گزارش"><label>از تاریخ <input id="startDate" type="date"></label><label>تا تاریخ <input id="endDate" type="date"></label><label>فروشگاه <select id="storeFilter"><option value="">همهٔ فروشگاه‌ها</option></select></label><div class="filter-foot">تبدیل شمسی فقط برای نمایش است؛ فیلتر و مرتب‌سازی بر اساس تاریخ میلادی انجام می‌شود.</div></section>
+<section class="kpi-grid" aria-label="شاخص‌های کلیدی">
+<article class="kpi"><div class="kpi-head"><span>فروش ناخالص واجدشرایط</span><span class="kpi-icon">↗</span></div><strong id="grossSales">—</strong><small>مقدار × قیمت برای ردیف فروش مثبت</small></article>
+<article class="kpi primary-kpi"><div class="kpi-head"><span>فروش خالص مثبت</span><span class="kpi-icon">◈</span></div><strong id="positiveNet">—</strong><small>پس از تخفیف ثبت‌شده؛ بدون هزینه و سود</small></article>
+<article class="kpi"><div class="kpi-head"><span>فاکتورهای یکتا</span><span class="kpi-icon">▤</span></div><strong id="invoiceCount">—</strong><small>شناسهٔ distinct، نه تعداد ردیف</small></article>
+<article class="kpi"><div class="kpi-head"><span>میانگین مبلغ فاکتور</span><span class="kpi-icon">⌁</span></div><strong id="averageOrder">—</strong><small>فروش خالص مثبت تقسیم بر فاکتورهای یکتا</small></article>
+<article class="kpi"><div class="kpi-head"><span>مشتریان شناسایی‌شده</span><span class="kpi-icon">◎</span></div><strong id="customerCount">—</strong><small>شناسهٔ خالی در این شاخص شمرده نمی‌شود</small></article>
+<article class="kpi"><div class="kpi-head"><span>نرخ مشتری تکراری</span><span class="kpi-icon">⟳</span></div><strong id="repeatRate">—</strong><small>مشتری با حداقل دو فاکتور تقسیم بر مشتریان شناسایی‌شده</small></article>
+</section>
+<section id="trends" class="panel-grid">
+<article class="panel trend-panel"><div class="panel-title"><div><h2>روند ماهانهٔ ارزش ثبت‌شده</h2><p>جمع علامت‌دار ردیف‌های معتبر، شامل مقادیر منفی</p></div><span class="subtle-tag">ماه میلادی</span></div><div id="trendChart" class="trend-chart" role="img" aria-label="نمودار روند ماهانه فروش"></div><div class="chart-legend"><span><i></i> ارزش ثبت‌شدهٔ علامت‌دار</span><span class="legend-note">ترتیب زمانی بر اساس تاریخ میلادی</span></div></article>
+<article class="panel quality-summary"><div class="panel-title"><div><h2>سلامت دادهٔ منبع</h2><p>ممیزی کل فایل، مستقل از فیلتر</p></div><span class="health-mark">✓</span></div><div class="quality-score-row"><div><strong id="validPercent">—</strong><small>سهم ردیف معتبر</small></div><div class="progress-track"><span id="validProgress"></span></div></div><div class="quality-stat"><span>ردیف‌های فایل</span><b id="allRows">—</b></div><div class="quality-stat"><span>ردیف نامعتبر</span><b id="invalidRows" class="warning-text">—</b></div><div class="quality-stat"><span>نامزد تکراری عیناً مشابه</span><b id="duplicateRows">—</b></div><div class="quality-stat"><span>شناسهٔ مشتری خالی</span><b id="missingCustomers">—</b></div><a class="text-link" href="#quality">مشاهدهٔ قواعد کیفیت ←</a></article>
+</section>
+<section id="products" class="panel-grid lower-panels">
+<article class="panel"><div class="panel-title"><div><h2>کالاهای برتر</h2><p>مرتب‌شده بر اساس فروش خالص مثبت</p></div><span class="subtle-tag">حداکثر ۸ قلم</span></div><div id="productBars" class="product-bars"></div></article>
+<article class="panel"><div class="panel-title"><div><h2>مقایسهٔ فروشگاه‌ها</h2><p>فروش خالص مثبت و تعداد فاکتور یکتا</p></div></div><div class="table-wrap"><table><thead><tr><th>فروشگاه</th><th>فروش خالص</th><th>فاکتور</th></tr></thead><tbody id="storeTable"></tbody></table></div></article>
+</section>
+<section id="quality" class="panel quality-details"><div class="panel-title"><div><h2>قواعد کنترل کیفیت</h2><p>ردیف‌های مشکوک گزارش می‌شوند؛ داده خام بی‌صدا حذف یا اصلاح نمی‌شود.</p></div></div><div class="quality-rule-grid"><div><b>۱. اعتبار تاریخ</b><p>تاریخ باید با قالب ISO میلادی قابل تفسیر باشد.</p></div><div><b>۲. شناسه‌های پایه</b><p>فاکتور، فروشگاه و کد و نام کالا نباید خالی باشند.</p></div><div><b>۳. مقادیر عددی</b><p>قیمت و تخفیف منفی نامعتبرند؛ ردیف quantity منفی فقط با تخفیف صفر پذیرفته می‌شود.</p></div><div><b>۴. تکراری‌های احتمالی</b><p>ردیف عیناً مشابه نامزد است و خودکار حذف نمی‌شود.</p></div></div><details class="method-details"><summary>تعریف KPIها و محدودیت تحلیل</summary><p>مقادیر پولی مصنوعی‌اند. هزینهٔ خرید، مالیات واقعی، موجودی، تسویهٔ بانکی و سود در داده وجود ندارد. فروش ناخالص و خالص ثبت‌شده معادل درآمد حسابداری یا سود نیستند. نرخ مشتری تکراری نیز معیار توصیفی است و معادل churn یا retention cohort نیست.</p></details></section>
+<footer><span>بازاربان · نمونه‌کار تحلیل داده</span><span>نسخهٔ ۰.۱.۰ · دادهٔ آزمایشی</span></footer>
+</div>
+</main>
+</div>
+<script src="dashboard.js" defer></script>
+</body></html>

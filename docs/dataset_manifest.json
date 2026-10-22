@@ -1,0 +1,15 @@
+{
+  "dataset_id": "bazaarban_synthetic_sales_v1",
+  "dataset_classification": "synthetic demonstration data",
+  "generator": "src/bazaarban/generator.py",
+  "seed": 20261021,
+  "requested_invoice_count": 520,
+  "retrieved_at_utc": null,
+  "source_url": null,
+  "license": "project-generated synthetic data; no third-party source dataset",
+  "data_contains_real_customer_records": false,
+  "intentional_quality_anomalies": ["duplicate row candidates", "blank invoice id", "invalid date", "negative unit price"],
+  "storage_date_format": "Gregorian ISO YYYY-MM-DD",
+  "display_calendar": "Solar Hijri/Jalali; display only",
+  "sha256_is_populated_after_generation": true
+}
