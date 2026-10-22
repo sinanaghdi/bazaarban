@@ -113,7 +113,8 @@ def test_cancelled_invoice_with_positive_quantity_is_not_positive_sales():
     report = analyze_sales(load_in_memory(source))
     assert report["kpis"]["gross_sales_irr"] == 0.0
     assert report["kpis"]["distinct_positive_invoices"] == 0
-    assert report["kpis"]["cancellation_positive_rows_excluded"] == 1
+    assert report["kpis"]["cancellation_invoice_line_count"] == 1
+    assert report["kpis"]["cancellation_positive_candidate_rows_excluded"] == 1
 
 def test_generic_currency_schema_reports_the_source_currency_not_irr(tmp_path):
     frame = pd.DataFrame([{
