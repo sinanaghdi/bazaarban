@@ -220,7 +220,8 @@ def analyze_sales(
         "financially_computable_line_count": int(len(valid)),
         "positive_sales_line_count": int(len(positives)),
         "return_line_count": int(len(returns)),
-        "cancellation_positive_rows_excluded": int(is_cancellation.sum()),
+        "cancellation_invoice_line_count": int(is_cancellation.sum()),
+        "cancellation_positive_candidate_rows_excluded": int((is_cancellation & valid["quantity_parsed"].gt(0) & valid["unit_price_parsed"].gt(0)).sum()),
     }
     return {
         "kpis": kpis,

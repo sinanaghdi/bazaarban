@@ -126,3 +126,14 @@ def test_generic_currency_schema_reports_the_source_currency_not_irr(tmp_path):
     assert report["currency_code"] == "GBP"
     assert report["kpis"]["gross_sales_gbp"] == 2.5
     assert "gross_sales_irr" not in report["kpis"]
+
+
+def test_cancellation_counts_distinguish_all_cancelled_lines_from_positive_candidates():
+    source = pd.DataFrame([
+        {"sale_date":"2026-01-02","invoice_id":"C-100","store_id":"S-1","store_name":"فروشگاه","product_code":"P-1","product_name":"کالا","category":"نامشخص","customer_id":"C-1","quantity":2,"unit_price_irr":100,"discount_irr":0},
+        {"sale_date":"2026-01-02","invoice_id":"c-101","store_id":"S-1","store_name":"فروشگاه","product_code":"P-1","product_name":"کالا","category":"نامشخص","customer_id":"C-1","quantity":-1,"unit_price_irr":100,"discount_irr":0},
+    ])
+    report = analyze_sales(load_in_memory(source))
+    assert report["kpis"]["cancellation_invoice_line_count"] == 2
+    assert report["kpis"]["cancellation_positive_candidate_rows_excluded"] == 1
+    assert report["kpis"]["gross_sales_irr"] == 0.0
